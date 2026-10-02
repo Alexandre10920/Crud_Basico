@@ -1,11 +1,16 @@
 package br.com.senai.teste.controller;
 
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import java.util.Optional;
+
 
 import br.com.senai.teste.model.Aluno;
 import br.com.senai.teste.service.AlunoService;
@@ -26,8 +31,24 @@ public class AlunoController {
         
         Aluno alunoCadastrado = alunoService.cadastrar(aluno);
         return ResponseEntity.status(HttpStatus.CREATED).body(alunoCadastrado);
+
     }
 
+    @GetMapping
+    public ResponseEntity<List<Aluno>> listarTodos() {
+        List<Aluno> alunos = alunoService.listarTodos();
+        return ResponseEntity.ok(alunos);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Aluno> buscarPorId(@PathVariable Integer id) {
+        Optional<Aluno> alunoOptional = alunoService.buscarPorId(id);
+        if (alunoOptional.isPresent()) {
+            return ResponseEntity.ok(alunoOptional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     
 }
 
