@@ -15,12 +15,12 @@ public class AlunoService {
     public AlunoService(AlunoRepository alunoRepository) {
         this.alunoRepository = alunoRepository;
     }
-
+    
     public Aluno cadastrar(Aluno aluno) {
         return alunoRepository.save(aluno);
     }
 
-    public List<Aluno> listarTodos() {
+    public List<Aluno> listar() {
         return alunoRepository.findAll();
     }
 
@@ -29,19 +29,30 @@ public class AlunoService {
     }
 
     public Optional<Aluno> atualizar(
-        Integer id, Aluno novosDados)
-     {
-        Optional<Aluno> alunoEncontrado = alunoRepository.findById(id);
+        Integer id, Aluno novosDados) {
 
-        if (alunoEncontrado.isEmpty()) {
-            return Optional.empty();
-        }
+            Optional<Aluno> alunoEncontrado = alunoRepository.findById(id);
 
-        Aluno aluno = alunoEncontrado.get();
+            if (alunoEncontrado.isEmpty()) {
+                return Optional.empty();
+            }
+
+            Aluno aluno = alunoEncontrado.get();
 
         aluno.setNome(novosDados.getNome());
         aluno.setEmail(novosDados.getEmail());
 
         return Optional.of(alunoRepository.save(aluno));
-    }
+     }
+
+     public boolean excluir(Integer id) {
+        
+
+        if (alunoRepository.existsById(id)){
+            return false;
+        }
+
+        alunoRepository.deleteById(id);
+        return true;
+     }
 } 
