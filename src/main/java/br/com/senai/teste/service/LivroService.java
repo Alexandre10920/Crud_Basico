@@ -49,7 +49,7 @@ public class LivroService {
      public boolean excluir(Integer id) {
         
 
-        if (livroRepository.existsById(id)){
+        if (!livroRepository.existsById(id)){
             return false;
         }
 

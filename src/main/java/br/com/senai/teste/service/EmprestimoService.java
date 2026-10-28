@@ -97,7 +97,39 @@ public class EmprestimoService {
         public List<Emprestimo> listar() {
         return emprestimoRepository.findAll();
     }
-        
+        public List<Emprestimo> listarAtrasados() {
+            return emprestimoRepository.findByDataPrevistaDevolucaoBeforeAndDataDevolucaoIsNull(LocalDate.now());
     
     }
+
+    public List<Emprestimo> buscarAtrasadosPorAluno(Integer alunoId) {
+        return emprestimoRepository.findByAlunoIdAndDataPrevistaDevolucaoBeforeAndDataDevolucaoIsNull(alunoId, LocalDate.now());
+    }
+
+    public Optional<Emprestimo> renovar(Integer id, LocalDate novaDataPrevista) {
+        Optional<Emprestimo> emprestimoOptional = emprestimoRepository.findById(id);
+
+        if (emprestimoOptional.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Emprestimo emprestimo = emprestimoOptional.get();
+
+        if (emprestimo.getDataDevolucao() != null) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "O empréstimo não pode ser renovado"
+            );
+        }
+        if (!novaDataPrevista.isAfter(emprestimo.getDataPrevistaDevolucao())) {
+            throw new ResponseStatusException(
+                HttpStatus.CONFLICT, "A nova data prevista deve ser posterior à data atual"
+            );
+        }
+
+        emprestimo.setDataPrevistaDevolucao(novaDataPrevista);
+
+        return Optional.of(emprestimoRepository.save(emprestimo));
+    }
+}
+
 
